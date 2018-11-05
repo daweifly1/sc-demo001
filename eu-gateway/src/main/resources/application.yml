@@ -34,3 +34,14 @@ logging:
   file: ${LOG_TEMP:./logs}/${spring.application.name}.log
   level:
     com.xiaojun: debug
+
+zuul:
+  routes:
+    main-data:
+      path: /api/main-data/**
+      serviceId: demo1
+
+
+security:
+  basic:
+   enabled: false

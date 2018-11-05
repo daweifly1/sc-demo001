@@ -1,7 +1,10 @@
 package com.xiaojun.filter;
 
 import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by fp295 on 2018/6/26.
@@ -15,12 +18,12 @@ public class LoggerFilter extends ZuulFilter {
 
     @Override
     public String filterType() {
-        return "post";
+        return "pre";
     }
 
     @Override
     public int filterOrder() {
-        return 901;
+        return 0;
     }
 
     @Override
@@ -31,6 +34,13 @@ public class LoggerFilter extends ZuulFilter {
     @Override
     public Object run() {
 //        logSendService.send(RequestContext.getCurrentContext());
+        RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+        String url = request.getRequestURI();
+        String method = request.getMethod();
+        ctx.addZuulRequestHeader("username", "dd");
+        ctx.addZuulRequestHeader("origin", "cc");
+        ctx.addZuulRequestHeader("original_requestURL",request.getRequestURL().toString());
         return null;
     }
 }
