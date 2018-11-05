@@ -3,9 +3,6 @@ package com.xiaojun.filter;
 import com.netflix.zuul.ZuulFilter;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.POST_TYPE;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SEND_RESPONSE_FILTER_ORDER;
-
 /**
  * Created by fp295 on 2018/6/26.
  * 网关日志
@@ -18,12 +15,12 @@ public class LoggerFilter extends ZuulFilter {
 
     @Override
     public String filterType() {
-        return POST_TYPE;
+        return "post";
     }
 
     @Override
     public int filterOrder() {
-        return SEND_RESPONSE_FILTER_ORDER - 1;
+        return 901;
     }
 
     @Override

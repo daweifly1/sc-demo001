@@ -34,3 +34,4 @@ logging:
   file: ${LOG_TEMP:./logs}/${spring.application.name}.log
   level:
     com.xiaojun: debug
+    root: debug

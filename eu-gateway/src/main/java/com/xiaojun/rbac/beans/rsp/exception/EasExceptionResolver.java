@@ -1,6 +1,5 @@
 package com.xiaojun.rbac.beans.rsp.exception;
 
-import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -10,9 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class EasExceptionResolver extends SimpleMappingExceptionResolver {
 
-    @Nullable
     @Override
-    protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex) {
+    protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         String viewName = determineViewName(ex, request);
         if (viewName != null) {
             // 非异步请求
