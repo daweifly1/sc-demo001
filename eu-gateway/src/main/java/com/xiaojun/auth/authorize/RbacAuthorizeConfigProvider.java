@@ -18,7 +18,7 @@ public class RbacAuthorizeConfigProvider implements AuthorizeConfigProvider {
         config
                 .antMatchers(HttpMethod.GET, "/fonts/**").permitAll()
                 .antMatchers(HttpMethod.GET,
-                        "/**/*.html","login","logout",
+                        "/**/*.html","login","logout","/auth/*",
                         "/admin/me",
                         "/resource").authenticated()
                 .anyRequest()

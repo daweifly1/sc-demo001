@@ -40,7 +40,33 @@ zuul:
     main-data:
       path: /api/main-data/**
       serviceId: demo1
-
+    api-a:
+      path: /cop/**
+      serviceid: copper-purchase
+    api-b:
+      path: /cos/**
+      serviceid: copper-server
+    api-c:
+      path: /web/**
+      serviceid: copper-surface
+    api-d:
+      path: /ius/**
+      serviceId: fast-auth-server
+    api-e:
+      path: /ss/**
+      serviceId: jx-copper-storage
+    api-f:
+      path: /ss-cdw/**
+      serviceId: storage-server-cdw
+    api-g:
+      path: /ius-a/**
+      serviceId: storage-server-v
+  max:
+    host:
+      connections: 500
+  host:
+      socket-timeout-millis: 600000
+      connect-timeout-millis: 600000
 
 security:
   basic:

@@ -56,6 +56,8 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
                 .and()
+                .authorizeRequests().antMatchers("/auth/**").permitAll()
+                .and()
                 //记住我配置，如果想在'记住我'登录时记录日志，可以注册一个InteractiveAuthenticationSuccessEvent事件的监听器
                 .rememberMe()
                 .tokenRepository(persistentTokenRepository())
@@ -64,7 +66,7 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .invalidSessionStrategy(invalidSessionStrategy())
-                .maximumSessions(1)
+                .maximumSessions(5)
                 .maxSessionsPreventsLogin(true)
                 .expiredSessionStrategy(expiredSessionStrategy())
                 .and()
