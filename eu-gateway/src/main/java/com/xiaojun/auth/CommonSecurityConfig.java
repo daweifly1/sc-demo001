@@ -55,8 +55,13 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
+                .loginProcessingUrl("/auth/login")
+                .permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/auth/**").permitAll()
+                .authorizeRequests()
+                .antMatchers("/profile/getLogin").permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 //记住我配置，如果想在'记住我'登录时记录日志，可以注册一个InteractiveAuthenticationSuccessEvent事件的监听器
                 .rememberMe()

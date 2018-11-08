@@ -9,6 +9,8 @@ import java.util.Set;
 
 @Data
 public class SysUserDetail implements UserDetails {
+    private Integer id;
+
     private String username;
     private String password;
     private Set<String> havePermissionList;

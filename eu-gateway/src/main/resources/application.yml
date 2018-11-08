@@ -50,7 +50,7 @@ zuul:
       path: /web/**
       serviceid: copper-surface
     api-d:
-      path: /ius/**
+      path: /ius-d/**
       serviceId: fast-auth-server
     api-e:
       path: /ss/**
@@ -59,7 +59,7 @@ zuul:
       path: /ss-cdw/**
       serviceId: storage-server-cdw
     api-g:
-      path: /ius-a/**
+      path: /ius-s/**
       serviceId: storage-server-v
   max:
     host:
@@ -71,3 +71,14 @@ zuul:
 security:
   basic:
    enabled: false
+
+fast:
+  auth:
+    login:
+      url: /ius/auth/login,/ius/auth/sigin
+    logout:
+      url: /ius/auth/logout,/ius/auth/signout
+    thirdAuth:
+      url: /ius/thirdAuth/webAuth,/ius/thirdAuth/registerAccount
+    thirdUser:
+      url: /ius/thirdAuth/getUserInfo

@@ -39,7 +39,7 @@ public class LoggerFilter extends ZuulFilter {
         String url = request.getRequestURI();
         String method = request.getMethod();
         ctx.addZuulRequestHeader("username", "dd");
-        ctx.addZuulRequestHeader("x-user-id", "230485564632072192");
+//        ctx.addZuulRequestHeader("x-user-id", "230485564632072192");
         ctx.addZuulRequestHeader("original_requestURL",request.getRequestURL().toString());
         return null;
     }
