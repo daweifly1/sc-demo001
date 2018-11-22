@@ -3,6 +3,7 @@ package com.xiaojun.yb.web;
 import com.netflix.zuul.context.RequestContext;
 import com.xiaojun.infra.ActionResult;
 import com.xiaojun.yb.comm.Ref;
+import com.xiaojun.yb.comm.enums.ErrorCode;
 import com.xiaojun.yb.service.VO.AccountPwdVO;
 import com.xiaojun.yb.service.VO.LockVO;
 import com.xiaojun.yb.service.VO.ProfileVO;
@@ -28,7 +29,7 @@ public class ProfileController extends BasicController {
             method = {RequestMethod.POST}
     )
     @ApiOperation("添加用户")
-    public ActionResult add(@RequestBody ProfileVO profileVO, @RequestHeader("x-user-id") String userId) throws Exception {
+    public ActionResult add(@RequestBody ProfileVO profileVO, @RequestHeader(value = "x-user-id", defaultValue = "") String userId) throws Exception {
         Ref ref = new Ref("");
         if (StringUtils.isBlank(profileVO.getSpaceId())) {
 //            String a1 = this.profileService.item(userId).getSpaceId();
@@ -44,7 +45,7 @@ public class ProfileController extends BasicController {
             method = {RequestMethod.GET}
     )
     @ApiOperation("查询Oauth2个人信息")
-    public ActionResult getUserInfo(@RequestHeader("x-app-id") String appId, @RequestHeader("x-user-id") String userId) throws Exception {
+    public ActionResult getUserInfo(@RequestHeader(name = "x-app-id", required = false, defaultValue = "gateway") String appId, @RequestHeader(name = "x-user-id", required = false, defaultValue = "") String userId) throws Exception {
 //        return this.actionResult(this.profileService.getUserInfo(appId, userId));
         return null;
     }
@@ -74,12 +75,12 @@ public class ProfileController extends BasicController {
             method = {RequestMethod.GET}
     )
     @ApiOperation("查询登录用户信息")
-    public ActionResult<ProfileVO> getLoginUser(@RequestHeader("x-user-id") String userId) throws Exception {
+    public ActionResult<ProfileVO> getLoginUser(@RequestHeader(name = "x-user-id", required = false, defaultValue = "") String userId) throws Exception {
 //        return this.actionResult(this.profileService.queryLoginUser(userId));
 
-        RequestContext ctx = RequestContext.getCurrentContext();
-        HttpSession httpSession = ctx.getRequest().getSession();
-        return null;
+//        RequestContext ctx = RequestContext.getCurrentContext();
+//        HttpSession httpSession = ctx.getRequest().getSession();
+        return actionResult(ErrorCode.NeedLogin);
     }
 
     @RequestMapping(
