@@ -5,11 +5,13 @@ package com.xiaojun.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xiaojun.auth.config.CustomsSecurityProperties;
+import com.xiaojun.common.fastjson.FastJsonUtil;
+import com.xiaojun.infra.ActionResult;
 import com.xiaojun.rbac.beans.rsp.server.Response;
+import com.xiaojun.yb.comm.enums.ErrorCode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.session.InvalidSessionStrategy;
@@ -66,11 +68,13 @@ public class CommonSessionStrategy implements InvalidSessionStrategy, SessionInf
             logger.info("跳转到:" + targetUrl);
             redirectStrategy.sendRedirect(request, response, targetUrl);
         } else {
-            Object result = buildResponseContent(request);
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//            Object result = buildResponseContent(request);
+//            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(result));
+//            response.getWriter().write(objectMapper.writeValueAsString(result));
+            response.getWriter().write(objectMapper.writeValueAsString(FastJsonUtil.toJSONString(new ActionResult(ErrorCode.CheckLoginFailure.getCode(), ErrorCode.CheckLoginFailure.getDesc()))));
         }
+
 
     }
 

@@ -2,7 +2,6 @@ package com.xiaojun.auth.authorize;
 
 import com.xiaojun.auth.filter.JWTAuthenticationToken;
 import com.xiaojun.auth.filter.TokenAuthenticationHandler;
-import com.xiaojun.common.http.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,9 +29,9 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
         if (StringUtils.isBlank(token)) {
             token = (String) req.getSession().getAttribute(HEADER_STRING);
         }
-        if (StringUtils.isBlank(token)) {
-            token = (String) CookieUtil.getCookieValueByName(req, HEADER_STRING);
-        }
+//        if (StringUtils.isBlank(token)) {
+//            token = (String) CookieUtil.getCookieValueByName(req, HEADER_STRING);
+//        }
         if (StringUtils.isNotBlank(token) && token.startsWith(TOKEN_PREFIX)) {
             TokenAuthenticationHandler tokenAuthenticationHandler = new TokenAuthenticationHandler();
             String subject = tokenAuthenticationHandler.getSubjectFromToken(token.replace(TOKEN_PREFIX, ""));

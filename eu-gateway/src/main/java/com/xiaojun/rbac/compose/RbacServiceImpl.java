@@ -3,6 +3,8 @@
  */
 package com.xiaojun.rbac.compose;
 
+import com.xiaojun.common.fastjson.FastJsonUtil;
+import com.xiaojun.common.http.TockenUtil;
 import com.xiaojun.rbac.api.RbacService;
 import com.xiaojun.rbac.api.vo.SysUserDetail;
 import com.xiaojun.rbac.beans.dt.SysRole;
@@ -36,14 +38,20 @@ public class RbacServiceImpl implements RbacService {
         Object principal = authentication.getPrincipal();
 
         boolean hasPermission = false;
-
-        if (principal instanceof SysUserDetail) {
+        if (null != principal && principal instanceof java.lang.String) {
+            SysUserDetail su = FastJsonUtil.parse(principal.toString(), SysUserDetail.class);
+            if (null == su) {
+                su = TockenUtil.getSysUserDetailFromRequest(request);
+            }
+            if (null == su) {
+                return hasPermission;
+            }
             //如果用户名是admin，就永远返回true
-            if (StringUtils.equals(((SysUserDetail) principal).getUsername(), "admin")) {
+            if (StringUtils.equals(su.getUsername(), "admin")) {
                 hasPermission = true;
             } else {
                 // 读取用户所拥有权限的所有URL
-                Set<String> urls = ((SysUserDetail) principal).getHavePermissionList();
+                Set<String> urls = su.getHavePermissionList();
                 for (String url : urls) {
                     if (antPathMatcher.match(url, request.getRequestURI())) {
                         hasPermission = true;
@@ -52,7 +60,6 @@ public class RbacServiceImpl implements RbacService {
                 }
             }
         }
-
         return hasPermission;
     }
 

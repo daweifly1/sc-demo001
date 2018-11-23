@@ -123,7 +123,7 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
             HttpSession session = attr.getRequest().getSession(true);
             //可以考虑只写cookie
             session.setAttribute(JWTLoginFilter.HEADER_STRING, response.getHeader(JWTLoginFilter.HEADER_STRING));
-            Cookie cookie = new Cookie(JWTLoginFilter.HEADER_STRING, response.getHeader(JWTLoginFilter.HEADER_STRING));//创建一个cookie，cookie的名字是lastAccessTime
+            Cookie cookie = new Cookie(JWTLoginFilter.HEADER_STRING, response.getHeader(JWTLoginFilter.HEADER_STRING));
             //将cookie对象添加到response对象中，这样服务器在输出response对象中的内容时就会把cookie也输出到客户端浏览器
             response.addCookie(cookie);
             response.setContentType("application/json");

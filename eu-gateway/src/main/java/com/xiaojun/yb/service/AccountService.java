@@ -101,7 +101,7 @@ public class AccountService {
 
     }
 
-    public ErrorCode login(UserLoginVO userLoginVO, Ref ref, Integer a3) throws Exception {
+    public ErrorCode login(UserLoginVO userLoginVO, Ref<SysUserDetail> ref, Integer a3) throws Exception {
         if (StringUtils.isBlank(userLoginVO.getCode())) {
             return ErrorCode.FailedToVerifyCode;
         }
@@ -113,10 +113,10 @@ public class AccountService {
         if (null == ru) {
             return ErrorCode.CheckLoginFailure;
         }
+        ref.set(ru);
         if (passwordEncoder.matches(userLoginVO.getPassword(), ru.getPassword())) {
             return ErrorCode.Success;
         }
-        ref.set(ru.getUsername());
         return ErrorCode.CheckLoginFailure;
     }
 

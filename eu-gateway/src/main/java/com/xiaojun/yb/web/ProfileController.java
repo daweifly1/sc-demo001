@@ -1,7 +1,7 @@
 package com.xiaojun.yb.web;
 
-import com.netflix.zuul.context.RequestContext;
 import com.xiaojun.infra.ActionResult;
+import com.xiaojun.rbac.api.vo.SysUserDetail;
 import com.xiaojun.yb.comm.Ref;
 import com.xiaojun.yb.comm.enums.ErrorCode;
 import com.xiaojun.yb.service.VO.AccountPwdVO;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -75,11 +75,14 @@ public class ProfileController extends BasicController {
             method = {RequestMethod.GET}
     )
     @ApiOperation("查询登录用户信息")
-    public ActionResult<ProfileVO> getLoginUser(@RequestHeader(name = "x-user-id", required = false, defaultValue = "") String userId) throws Exception {
-//        return this.actionResult(this.profileService.queryLoginUser(userId));
-
-//        RequestContext ctx = RequestContext.getCurrentContext();
-//        HttpSession httpSession = ctx.getRequest().getSession();
+    public ActionResult<ProfileVO> getLoginUser(@RequestHeader(name = "x-user-id", required = false, defaultValue = "") String userId, HttpServletRequest request) throws Exception {
+        SysUserDetail su = getSysUserDetailFromRequest(request);
+        if (null != su) {
+            ProfileVO profileVO = new ProfileVO();
+            profileVO.setName(su.getUsername());
+            profileVO.setLoginName(su.getUsername());
+            return actionResult(ErrorCode.Success, profileVO);
+        }
         return actionResult(ErrorCode.NeedLogin);
     }
 

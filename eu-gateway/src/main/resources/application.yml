@@ -54,7 +54,7 @@ zuul:
       serviceId: fast-auth-server
     api-e:
       path: /ss/**
-      serviceId: jx-copper-storage
+      serviceId: storage-server
     api-f:
       path: /ss-cdw/**
       serviceId: storage-server-cdw

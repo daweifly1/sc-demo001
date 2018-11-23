@@ -15,8 +15,10 @@ import java.io.IOException;
 
 public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    public  static final String TOKEN_PREFIX = "Bearer";
+    public static final String TOKEN_PREFIX = "Bearer";
     public static final String HEADER_STRING = "Authorization";
+
+    public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "loginName";
 
     private AuthenticationSuccessHandler successHandler;
 
@@ -44,5 +46,10 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     public void setSuccessHandler(AuthenticationSuccessHandler successHandler) {
         this.successHandler = successHandler;
+    }
+
+
+    protected String obtainUsername(HttpServletRequest request) {
+        return request.getParameter(SPRING_SECURITY_FORM_USERNAME_KEY);
     }
 }

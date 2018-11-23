@@ -1,7 +1,13 @@
 package com.xiaojun.yb.web;
 
+import com.xiaojun.auth.filter.JWTLoginFilter;
+import com.xiaojun.auth.filter.TokenAuthenticationHandler;
+import com.xiaojun.common.fastjson.FastJsonUtil;
+import com.xiaojun.common.http.CookieUtil;
 import com.xiaojun.infra.ActionResult;
+import com.xiaojun.rbac.api.vo.SysUserDetail;
 import com.xiaojun.yb.comm.Ref;
+import com.xiaojun.yb.comm.enums.ErrorCode;
 import com.xiaojun.yb.service.AccountService;
 import com.xiaojun.yb.service.AuthService;
 import com.xiaojun.yb.service.VO.UpdatePasswordVO;
@@ -13,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 
@@ -28,6 +38,7 @@ public class AuthController extends BasicController {
     AuthService authService;
     @Autowired
     AccountService accountService;
+
 
     @RequestMapping(
             value = {"/authInfo"},
@@ -97,9 +108,22 @@ public class AuthController extends BasicController {
             value = {"/login"},
             method = {RequestMethod.POST}
     )
-    public ActionResult<String> login(@RequestBody UserLoginVO userLoginVO, @RequestHeader("x-from-site") Integer site) throws Exception {
-        Ref ref = new Ref("");
-        return actionResult(accountService.login(userLoginVO, ref, site), ref.get());
+    public ActionResult<String> login(@RequestBody UserLoginVO userLoginVO, @RequestHeader("x-from-site") Integer site, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Ref<SysUserDetail> ref = new Ref(null);
+        ActionResult r = actionResult(accountService.login(userLoginVO, ref, site), ref.get().getUsername());
+        if (r.getCode() == ErrorCode.Success.getCode()) {
+            TokenAuthenticationHandler tokenAuthenticationHandler = new TokenAuthenticationHandler();
+            SysUserDetail userDetails = ref.get();
+            String token = JWTLoginFilter.TOKEN_PREFIX + " " + tokenAuthenticationHandler.generateToken(FastJsonUtil.toJSONString(userDetails));
+            response.addHeader(JWTLoginFilter.HEADER_STRING, token);
+
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpSession session = attr.getRequest().getSession(true);
+            session.setAttribute(JWTLoginFilter.HEADER_STRING, token);
+            ////将cookie对象添加到response对象中，这样服务器在输出response对象中的内容时就会把cookie也输出到客户端浏览器
+            CookieUtil.setCookie(response, JWTLoginFilter.HEADER_STRING, token, 60 * 100);
+        }
+        return r;
     }
 
     @RequestMapping(
