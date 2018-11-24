@@ -12,7 +12,7 @@
         <!--<module>eu-gateway</module>-->
     </modules>
 
-    <name>sc-consul</name>
+    <name>sc-demo</name>
     <url>http://www.example.com</url>
 
     <parent>

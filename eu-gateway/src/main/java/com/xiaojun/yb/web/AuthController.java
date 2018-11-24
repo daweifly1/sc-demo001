@@ -19,14 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 
@@ -117,11 +114,11 @@ public class AuthController extends BasicController {
             String token = JWTLoginFilter.TOKEN_PREFIX + " " + tokenAuthenticationHandler.generateToken(FastJsonUtil.toJSONString(userDetails));
             response.addHeader(JWTLoginFilter.HEADER_STRING, token);
 
-            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-            HttpSession session = attr.getRequest().getSession(true);
-            session.setAttribute(JWTLoginFilter.HEADER_STRING, token);
+//            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+////            HttpSession session = attr.getRequest().getSession(true);
+////            session.setAttribute(JWTLoginFilter.HEADER_STRING, token);
             ////将cookie对象添加到response对象中，这样服务器在输出response对象中的内容时就会把cookie也输出到客户端浏览器
-            CookieUtil.setCookie(response, JWTLoginFilter.HEADER_STRING, token, 60 * 100);
+            CookieUtil.setCookie(response, JWTLoginFilter.HEADER_STRING, token, TokenAuthenticationHandler.DEFAULT_EXPIRATION);
         }
         return r;
     }
@@ -130,7 +127,8 @@ public class AuthController extends BasicController {
             value = {"/logout"},
             method = {RequestMethod.POST}
     )
-    public ActionResult logout(@RequestHeader("x-user-id") String userId) {
-        return actionResult(userId);
+    public ActionResult logout(HttpServletResponse response) {
+        CookieUtil.setCookie(response, JWTLoginFilter.HEADER_STRING, "", 0);
+        return actionResult("");
     }
 }

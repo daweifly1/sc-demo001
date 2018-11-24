@@ -16,14 +16,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.session.InvalidSessionStrategy;
-import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -90,24 +87,24 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .csrf().disable();
 //        authorizeConfigManager.config(http.authorizeRequests());
-
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.csrf().disable().authorizeRequests()
-                .antMatchers("/auth/login", "/menu/authorized", "/profile/getLogin", "/auth/authInfo", "/auth/kaptcha").permitAll()
+                .antMatchers("/auth/login", "/menu/authorized", "/profile/getLogin", "/auth/authInfo", "/auth/logout", "/auth/kaptcha").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                //记住我配置，如果想在'记住我'登录时记录日志，可以注册一个InteractiveAuthenticationSuccessEvent事件的监听器
-                .rememberMe()
-                .tokenRepository(persistentTokenRepository())
-                .tokenValiditySeconds(60 * 60 * 24)
-                .userDetailsService(userDetailsService)
-                .and()
-                .sessionManagement()
-                .invalidSessionStrategy(invalidSessionStrategy())
-                .maximumSessions(5)
-                .maxSessionsPreventsLogin(true)
-                .expiredSessionStrategy(expiredSessionStrategy())
-                .and()
-                .and()
+//                //记住我配置，如果想在'记住我'登录时记录日志，可以注册一个InteractiveAuthenticationSuccessEvent事件的监听器
+//                .rememberMe()
+//                .tokenRepository(persistentTokenRepository())
+//                .tokenValiditySeconds(60 * 60 * 24)
+//                .userDetailsService(userDetailsService)
+//                .and()
+//                .sessionManagement()
+//                .invalidSessionStrategy(invalidSessionStrategy())
+//                .maximumSessions(5)
+//                .maxSessionsPreventsLogin(true)
+//                .expiredSessionStrategy(expiredSessionStrategy())
+//                .and()
+//                .and()
                 .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -145,21 +142,21 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationProvider;
     }
 
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-        tokenRepository.setDataSource(dataSource);
-//		tokenRepository.setCreateTableOnStartup(true);
-        return tokenRepository;
-    }
-
-    @Bean
-    public InvalidSessionStrategy invalidSessionStrategy() {
-        return new CommonSessionStrategy(securityProperties);
-    }
-
-    @Bean
-    public SessionInformationExpiredStrategy expiredSessionStrategy() {
-        return new CommonSessionStrategy(securityProperties);
-    }
+//    @Bean
+//    public PersistentTokenRepository persistentTokenRepository() {
+//        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+//        tokenRepository.setDataSource(dataSource);
+////		tokenRepository.setCreateTableOnStartup(true);
+//        return tokenRepository;
+//    }
+//
+//    @Bean
+//    public InvalidSessionStrategy invalidSessionStrategy() {
+//        return new CommonSessionStrategy(securityProperties);
+//    }
+//
+//    @Bean
+//    public SessionInformationExpiredStrategy expiredSessionStrategy() {
+//        return new CommonSessionStrategy(securityProperties);
+//    }
 }
