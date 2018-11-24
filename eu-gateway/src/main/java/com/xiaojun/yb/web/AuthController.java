@@ -1,6 +1,6 @@
 package com.xiaojun.yb.web;
 
-import com.xiaojun.auth.filter.JWTLoginFilter;
+import com.xiaojun.auth.filter.JWTConsts;
 import com.xiaojun.auth.filter.TokenAuthenticationHandler;
 import com.xiaojun.common.fastjson.FastJsonUtil;
 import com.xiaojun.common.http.CookieUtil;
@@ -111,14 +111,8 @@ public class AuthController extends BasicController {
         if (r.getCode() == ErrorCode.Success.getCode()) {
             TokenAuthenticationHandler tokenAuthenticationHandler = new TokenAuthenticationHandler();
             SysUserDetail userDetails = ref.get();
-            String token = JWTLoginFilter.TOKEN_PREFIX + " " + tokenAuthenticationHandler.generateToken(FastJsonUtil.toJSONString(userDetails));
-            response.addHeader(JWTLoginFilter.HEADER_STRING, token);
-
-//            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-////            HttpSession session = attr.getRequest().getSession(true);
-////            session.setAttribute(JWTLoginFilter.HEADER_STRING, token);
-            ////将cookie对象添加到response对象中，这样服务器在输出response对象中的内容时就会把cookie也输出到客户端浏览器
-            CookieUtil.setCookie(response, JWTLoginFilter.HEADER_STRING, token, TokenAuthenticationHandler.DEFAULT_EXPIRATION);
+            String token = tokenAuthenticationHandler.generateToken(FastJsonUtil.toJSONString(userDetails));
+            tokenAuthenticationHandler.doRefreshToken(response, token, true);
         }
         return r;
     }
@@ -128,7 +122,7 @@ public class AuthController extends BasicController {
             method = {RequestMethod.POST}
     )
     public ActionResult logout(HttpServletResponse response) {
-        CookieUtil.setCookie(response, JWTLoginFilter.HEADER_STRING, "", 0);
+        CookieUtil.setCookie(response, JWTConsts.HEADER_STRING, "", 0);
         return actionResult("");
     }
 }

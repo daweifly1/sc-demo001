@@ -1,6 +1,6 @@
 package com.xiaojun.common.http;
 
-import com.xiaojun.auth.filter.JWTLoginFilter;
+import com.xiaojun.auth.filter.JWTConsts;
 import com.xiaojun.auth.filter.TokenAuthenticationHandler;
 import com.xiaojun.common.fastjson.FastJsonUtil;
 import com.xiaojun.rbac.api.vo.SysUserDetail;
@@ -19,12 +19,12 @@ public class TockenUtil {
      * @return
      */
     public static SysUserDetail getSysUserDetailFromRequest(HttpServletRequest req) {
-        String token = req.getHeader(JWTLoginFilter.HEADER_STRING);
+        String token = req.getHeader(JWTConsts.HEADER_STRING);
         if (StringUtils.isBlank(token)) {
-            token = (String) req.getSession().getAttribute(JWTLoginFilter.HEADER_STRING);
+            token = (String) req.getSession().getAttribute(JWTConsts.HEADER_STRING);
         }
         if (StringUtils.isBlank(token)) {
-            token = (String) CookieUtil.getCookieValueByName(req, JWTLoginFilter.HEADER_STRING);
+            token = (String) CookieUtil.getCookieValueByName(req, JWTConsts.HEADER_STRING);
         }
         if (StringUtils.isNotBlank(token)) {
             SysUserDetail su = getSysUserDetail(token);
@@ -37,7 +37,7 @@ public class TockenUtil {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        token = token.replace(JWTLoginFilter.TOKEN_PREFIX, "");
+        token = token.replace(JWTConsts.TOKEN_PREFIX.trim(), "");
         TokenAuthenticationHandler tokenAuthenticationHandler = new TokenAuthenticationHandler();
         String token2 = tokenAuthenticationHandler.getSubjectFromToken(token);
         SysUserDetail su = FastJsonUtil.parse(token2, SysUserDetail.class);

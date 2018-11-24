@@ -4,6 +4,7 @@ import com.xiaojun.common.http.CookieUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class TokenAuthenticationHandler implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,8 +22,8 @@ public class TokenAuthenticationHandler implements Serializable {
     private static final String CLAIM_KEY_CREATED = "created";
     private static final String CLAIM_KEY_SUBJECT = "subject";
 
-    private static final String DEFAULT_SECRET = "eboot@secret";
-    public static final Long DEFAULT_EXPIRATION = 2*60L;
+    private static final String DEFAULT_SECRET = "scDemo001";
+    public static final Long DEFAULT_EXPIRATION = 2 * 60L;
 
     private String secret = DEFAULT_SECRET;
     private Long EXPIRATION = DEFAULT_EXPIRATION;
@@ -102,21 +104,35 @@ public class TokenAuthenticationHandler implements Serializable {
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    public void doRefreshToken(HttpServletResponse resp, String token) {
+    /**
+     * 认证 返回令牌 cookie过了过期时间一半时候刷新令牌
+     *
+     * @param resp
+     * @param token
+     */
+    public void doRefreshToken(HttpServletResponse resp, String token, boolean init) {
         Claims claims = getClaimsFromToken(token);
         if (null != claims) {
             String subject = claims.get(CLAIM_KEY_SUBJECT).toString();
             if (StringUtils.isNotBlank(subject)) {
                 SecurityContextHolder.getContext().setAuthentication(new JWTAuthenticationToken(subject));
             }
-            Date expiration = claims.getExpiration();
-            Date date = new Date(System.currentTimeMillis() + EXPIRATION * 1000 >> 1);
+            long expiration = claims.getExpiration().getTime();
+            long date = System.currentTimeMillis() + (EXPIRATION * 1000 >> 1);
+
+
             //距离过期时间还有一半时候刷新token
-            if (expiration.before(date)) {
+            if (date > expiration) {
                 token = refreshToken(token);
-                CookieUtil.setCookie(resp, JWTLoginFilter.HEADER_STRING, JWTLoginFilter.TOKEN_PREFIX + " " + token, TokenAuthenticationHandler.DEFAULT_EXPIRATION);
+                CookieUtil.setCookie(resp, JWTConsts.HEADER_STRING, JWTConsts.TOKEN_PREFIX + token, DEFAULT_EXPIRATION);
+//                ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+//                HttpSession session = attr.getRequest().getSession(true);
+//                session.setAttribute(JWTConsts.HEADER_STRING, token);
             }
-            resp.addHeader(JWTLoginFilter.HEADER_STRING, JWTLoginFilter.TOKEN_PREFIX + " " + token);
+            if (init) {
+                CookieUtil.setCookie(resp, JWTConsts.HEADER_STRING, JWTConsts.TOKEN_PREFIX + token, DEFAULT_EXPIRATION);
+            }
+            resp.addHeader(JWTConsts.HEADER_STRING, JWTConsts.TOKEN_PREFIX + token);
         }
     }
 }

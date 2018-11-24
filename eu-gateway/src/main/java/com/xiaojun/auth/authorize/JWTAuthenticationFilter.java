@@ -1,6 +1,6 @@
 package com.xiaojun.auth.authorize;
 
-import com.xiaojun.auth.filter.JWTLoginFilter;
+import com.xiaojun.auth.filter.JWTConsts;
 import com.xiaojun.auth.filter.TokenAuthenticationHandler;
 import com.xiaojun.common.http.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,16 +26,16 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        String token = req.getHeader(JWTLoginFilter.HEADER_STRING);
+        String token = req.getHeader(JWTConsts.HEADER_STRING);
 //        if (StringUtils.isBlank(token)) {
 //            token = (String) req.getSession().getAttribute(HEADER_STRING);
 //        }
         if (StringUtils.isBlank(token)) {
-            token = (String) CookieUtil.getCookieValueByName(req, JWTLoginFilter.HEADER_STRING);
+            token = (String) CookieUtil.getCookieValueByName(req, JWTConsts.HEADER_STRING);
         }
-        if (StringUtils.isNotBlank(token) && token.startsWith(JWTLoginFilter.TOKEN_PREFIX)) {
+        if (StringUtils.isNotBlank(token) && token.startsWith(JWTConsts.TOKEN_PREFIX.trim())) {
             TokenAuthenticationHandler tokenAuthenticationHandler = new TokenAuthenticationHandler();
-            tokenAuthenticationHandler.doRefreshToken(resp, token.replace(JWTLoginFilter.TOKEN_PREFIX, ""));
+            tokenAuthenticationHandler.doRefreshToken(resp, token.replace(JWTConsts.TOKEN_PREFIX.trim(), "").trim(), false);
         }
         filterChain.doFilter(request, response);
     }
